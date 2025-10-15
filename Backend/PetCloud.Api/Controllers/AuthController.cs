@@ -78,6 +78,10 @@ namespace PetCloud.Api.Controllers
             var key = jwtSection.GetValue<string>("Key");
             var issuer = jwtSection.GetValue<string>("Issuer");
             var audience = jwtSection.GetValue<string>("Audience");
+            if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience))
+            {
+                return StatusCode(500, "Configuración JWT inválida en el servidor");
+            }
 
             var claims = new[] {
                 new System.Security.Claims.Claim("id", usuario.Id.ToString()),

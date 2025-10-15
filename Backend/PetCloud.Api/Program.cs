@@ -3,6 +3,8 @@ using PetCloud.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using PetCloud.Api.Models;
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // JWT Authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
-var jwtKey = jwtSection.GetValue<string>("Key");
-var issuer = jwtSection.GetValue<string>("Issuer");
-var audience = jwtSection.GetValue<string>("Audience");
+var jwtKey = jwtSection.GetValue<string>("Key")
+    ?? throw new InvalidOperationException("Falta configuración Jwt:Key en appsettings.json");
+var issuer = jwtSection.GetValue<string>("Issuer")
+    ?? throw new InvalidOperationException("Falta configuración Jwt:Issuer en appsettings.json");
+var audience = jwtSection.GetValue<string>("Audience")
+    ?? throw new InvalidOperationException("Falta configuración Jwt:Audience en appsettings.json");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -59,4 +64,69 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Seed initial data (idempotent)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    static string Hash(string raw)
+    {
+        using var sha = SHA256.Create();
+        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(raw));
+        var sb = new StringBuilder();
+        foreach (var b in bytes) sb.Append(b.ToString("x2"));
+        return sb.ToString();
+    }
+
+    // Seed Veterinario
+    var vetEmail = "vet@demo.com";
+    if (!db.Usuarios.Any(u => u.CorreoElectronico == vetEmail))
+    {
+        var vetUser = new Usuario
+        {
+            Nombre = "Vete",
+            Apellido = "Demo",
+            CorreoElectronico = vetEmail,
+            HashContrasena = Hash("Vet1234!"),
+            Rol = Rol.Veterinario
+        };
+        db.Usuarios.Add(vetUser);
+        db.SaveChanges();
+        db.Veterinarios.Add(new Veterinario { UsuarioId = vetUser.Id });
+        db.SaveChanges();
+    }
+
+    // Seed Dueño + Mascota
+    var duenoEmail = "dueno@demo.com";
+    if (!db.Usuarios.Any(u => u.CorreoElectronico == duenoEmail))
+    {
+        var ownerUser = new Usuario
+        {
+            Nombre = "Dueno",
+            Apellido = "Demo",
+            CorreoElectronico = duenoEmail,
+            HashContrasena = Hash("Dueno1234!"),
+            Rol = Rol.Dueno
+        };
+        db.Usuarios.Add(ownerUser);
+        db.SaveChanges();
+        var dueno = new Dueno { UsuarioId = ownerUser.Id };
+        db.Duenos.Add(dueno);
+        db.SaveChanges();
+
+        var mascota = new Mascota
+        {
+            Nombre = "Firulais",
+            Especie = "Perro",
+            Raza = "Mestizo",
+            Sexo = "M",
+            FechaNacimiento = DateTime.UtcNow.AddYears(-3),
+            Peso = 18.2,
+            DuenoId = dueno.Id
+        };
+        db.Mascotas.Add(mascota);
+        db.SaveChanges();
+    }
+}
 app.Run();

@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Set API Base</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<script>
+  (function(){
+    const params = new URLSearchParams(window.location.search);
+    const api = params.get('api');
+    const next = params.get('next') || 'login.html';
+    if (api) {
+      try {
+        localStorage.setItem('apiBase', api);
+      } catch(e) {
+        console.warn('No se pudo escribir en localStorage', e);
+      }
+    }
+    // Redirigir al siguiente
+    const dest = next.startsWith('http') ? next : (window.location.origin ? (window.location.origin + '/' + next) : next);
+    window.location.href = dest;
+  })();
+</script>
+  <p>Configurando API base y redirigiendo...</p>
+</body>
+</html>

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "i3OaEDYw4S4=",
+  "dgSpecHash": "v+Trudg1udw=",
   "success": true,
-  "projectFilePath": "c:\\Users\\franc\\Desktop\\AppWeb PetCloud\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
+  "projectFilePath": "C:\\Users\\franc\\Desktop\\AppWeb PetCloud\\PetCloud-App\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\franc\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\franc\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
@@ -89,9 +89,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "PetCloud.Api depends on Swashbuckle.AspNetCore (>= 7.0.3) but Swashbuckle.AspNetCore 7.0.3 was not found. Swashbuckle.AspNetCore 7.1.0 was resolved instead.",
-      "projectPath": "c:\\Users\\franc\\Desktop\\AppWeb PetCloud\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
+      "projectPath": "C:\\Users\\franc\\Desktop\\AppWeb PetCloud\\PetCloud-App\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Users\\franc\\Desktop\\AppWeb PetCloud\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
+      "filePath": "C:\\Users\\franc\\Desktop\\AppWeb PetCloud\\PetCloud-App\\Backend\\PetCloud.Api\\PetCloud.Api.csproj",
       "libraryId": "Swashbuckle.AspNetCore",
       "targetGraphs": [
         "net9.0"

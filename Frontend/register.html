@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro - PetCloud</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script defer src="main.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-  <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
-    <a href="index.html" class="text-2xl font-bold">PetCloud</a>
-    <button id="theme-toggle" class="bg-white text-blue-600 px-3 py-1 rounded shadow">Tema oscuro</button>
-  </header>
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+  <header id="app-header"></header>
   <main class="flex-1 flex flex-col items-center justify-center p-6">
     <div class="bg-white rounded shadow-lg p-8 w-full max-w-md">
       <h2 class="text-2xl font-semibold mb-6 text-center">Registro</h2>
@@ -34,6 +33,34 @@
       <p class="mt-6 text-center text-sm">¿Ya tienes cuenta? <a href="login.html" class="text-blue-600 hover:underline">Inicia sesión</a></p>
     </div>
   </main>
-  <footer class="bg-gray-200 text-center p-2 text-gray-600 text-sm">© 2025 PetCloud. Todos los derechos reservados.</footer>
+  <footer class="bg-gray-200 dark:bg-gray-800 text-center p-2 text-gray-600 dark:text-gray-300 text-sm">© 2025 PetCloud. Todos los derechos reservados.</footer>
+
+  <script type="module">
+    import { renderHeader, initThemeToggle } from './js/ui.js';
+    import { register } from './js/auth.js';
+    renderHeader('app-header');
+    initThemeToggle();
+
+    const form = document.getElementById('register-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const role = fd.get('rol') || 'dueno';
+      const payload = {
+        firstName: fd.get('nombre'),
+        lastName: fd.get('apellido'),
+        email: fd.get('email'),
+        password: fd.get('password'),
+        role
+      };
+      try {
+        await register(payload);
+        // Tras registrarse, dirigir a login
+        window.location.href = 'login.html';
+      } catch (err) {
+        alert(err.message || 'Error al registrarse');
+      }
+    });
+  </script>
 </body>
 </html>

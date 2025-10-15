@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gastos - PetCloud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+</head>
+<body class="h-full bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
+  <header id="app-header"></header>
+  <main class="max-w-3xl mx-auto p-4">
+    <h1 class="text-2xl font-semibold mb-4">Gastos</h1>
+
+    <form id="frm-gasto" class="flex flex-col gap-3 bg-white dark:bg-gray-800 p-4 rounded shadow mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input id="monto" type="number" min="0" step="0.01" placeholder="Monto" class="border rounded p-2 dark:bg-gray-700" required />
+        <input id="descripcion" type="text" placeholder="Descripción (opcional)" class="border rounded p-2 dark:bg-gray-700" />
+        <input id="fecha" type="date" class="border rounded p-2 dark:bg-gray-700" required />
+      </div>
+      <button class="self-end px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Agregar gasto</button>
+    </form>
+
+    <ul id="lista-gastos" class="space-y-2"></ul>
+  </main>
+
+  <script type="module">
+    import { renderHeader, initThemeToggle } from './js/ui.js';
+    import { authFetch } from './js/api.js';
+
+    renderHeader('app-header');
+    initThemeToggle();
+
+    const list = document.getElementById('lista-gastos');
+    const form = document.getElementById('frm-gasto');
+
+    async function cargarGastos() {
+      const mascotaId = localStorage.getItem('mascotaId');
+      if (!mascotaId) { list.innerHTML = '<li class="text-sm text-gray-500">Selecciona una mascota en el encabezado.</li>'; return; }
+      const gastos = await authFetch(`/api/gastos/mascota/${mascotaId}`);
+      list.innerHTML = gastos.map(g => `
+        <li class="bg-white dark:bg-gray-800 rounded p-3 flex items-center justify-between shadow">
+          <div>
+            <div class="font-semibold">$ ${Number(g.monto).toFixed(2)}</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">${g.descripcion || ''} - ${new Date(g.fecha).toLocaleDateString()}</div>
+          </div>
+          <div class="flex gap-2">
+            <button data-id="${g.id}" class="btn-edit px-3 py-1 rounded bg-yellow-500 text-white">Editar</button>
+            <button data-id="${g.id}" class="btn-del px-3 py-1 rounded bg-red-600 text-white">Eliminar</button>
+          </div>
+        </li>`).join('');
+
+      list.querySelectorAll('.btn-del').forEach(b => b.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        await authFetch(`/api/gastos/${id}`, { method: 'DELETE' });
+        await cargarGastos();
+      }));
+
+      list.querySelectorAll('.btn-edit').forEach(b => b.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        const monto = prompt('Nuevo monto:');
+        if (!monto) return;
+        const descripcion = prompt('Nueva descripción (opcional):');
+        const fecha = prompt('Nueva fecha (YYYY-MM-DD):');
+        await authFetch(`/api/gastos/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ monto: parseFloat(monto), descripcion, fecha })
+        });
+        await cargarGastos();
+      }));
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mascotaId = localStorage.getItem('mascotaId');
+      if (!mascotaId) return alert('Elegí una mascota primero.');
+      const body = {
+        monto: parseFloat(document.getElementById('monto').value),
+        descripcion: document.getElementById('descripcion').value,
+        fecha: document.getElementById('fecha').value,
+        mascotaId: parseInt(mascotaId)
+      };
+      await authFetch('/api/gastos', { method: 'POST', body: JSON.stringify(body) });
+      form.reset();
+      await cargarGastos();
+    });
+
+    cargarGastos();
+  </script>
+</body>
+</html>
