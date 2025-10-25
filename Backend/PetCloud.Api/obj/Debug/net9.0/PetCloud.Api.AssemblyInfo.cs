@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PetCloud.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f5c7d9c57fa93834526eca73893c27d727f140c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0d1885c68a80d593d95119bd242451841237f5d2")]
 [assembly: System.Reflection.AssemblyProductAttribute("PetCloud.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PetCloud.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

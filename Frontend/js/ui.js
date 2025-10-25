@@ -29,7 +29,7 @@ export async function renderHeader(containerId = 'app-header') {
 
   el.innerHTML = `
     <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 shadow">
-      <a href="/c:/Users/franc/Desktop/AppWeb PetCloud/PetCloud-App/Frontend/dashboard.html" class="text-xl font-bold text-blue-600">PetCloud</a>
+      <a href="dashboard.html" class="text-xl font-bold text-blue-600">PetCloud</a>
       <div class="flex items-center gap-3">
         <select id="sel-mascota" class="border rounded p-2 dark:bg-gray-800 dark:text-gray-100">
           <option value="">Seleccionar mascota</option>

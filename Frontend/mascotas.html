@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PetCloud - Mascotas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+</head>
+<body class="h-full bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
+  <header id="app-header"></header>
+  <main class="max-w-4xl mx-auto p-4">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-semibold">Mis mascotas</h1>
+      <button id="btn-nueva" class="px-4 py-2 bg-blue-600 text-white rounded">Nueva mascota</button>
+    </div>
+
+    <div id="mascotas-list" class="space-y-3"></div>
+
+    <!-- Modal simple para crear/editar -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+      <div class="bg-white dark:bg-gray-800 rounded p-4 w-full max-w-lg">
+        <h2 id="modal-title" class="text-lg font-semibold mb-2">Nueva mascota</h2>
+        <div class="space-y-2">
+          <input id="m-nombre" placeholder="Nombre" class="w-full p-2 border rounded dark:bg-gray-900" />
+          <input id="m-especie" placeholder="Especie" class="w-full p-2 border rounded dark:bg-gray-900" />
+          <input id="m-raza" placeholder="Raza" class="w-full p-2 border rounded dark:bg-gray-900" />
+          <input id="m-sexo" placeholder="Sexo (M/F)" class="w-full p-2 border rounded dark:bg-gray-900" />
+          <input id="m-fecha" type="date" class="w-full p-2 border rounded dark:bg-gray-900" />
+          <input id="m-peso" type="number" step="0.1" placeholder="Peso (kg)" class="w-full p-2 border rounded dark:bg-gray-900" />
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="modal-cancel" class="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700">Cancelar</button>
+          <button id="modal-save" class="px-3 py-2 rounded bg-blue-600 text-white">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <script type="module">
+    import { renderHeader, initThemeToggle } from './js/ui.js';
+    import { listMascotas, openCreateModal } from './js/mascotas.js';
+    renderHeader('app-header');
+    initThemeToggle();
+
+    document.getElementById('btn-nueva')?.addEventListener('click', () => openCreateModal());
+    listMascotas(document.getElementById('mascotas-list'));
+  </script>
+</body>
+</html>

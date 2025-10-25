@@ -6,10 +6,10 @@ function Stop-Port {
   try {
     $conns = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
     if ($conns) {
-      $pid = ($conns | Select-Object -First 1).OwningProcess
-      Write-Host ("Stopping PID {0} on port {1}" -f $pid, $Port)
-      Stop-Process -Id $pid -Force -ErrorAction Stop
-      Write-Host ("Stopped PID {0}" -f $pid)
+      $procId = ($conns | Select-Object -First 1).OwningProcess
+      Write-Host ("Stopping PID {0} on port {1}" -f $procId, $Port)
+      Stop-Process -Id $procId -Force -ErrorAction Stop
+      Write-Host ("Stopped PID {0}" -f $procId)
     } else {
       Write-Host ("No listener on port {0}" -f $Port)
     }
@@ -56,18 +56,18 @@ $apiHttpsUrl = "https://localhost:$httpsPort"
 
 function Start-Frontend {
   if (Get-Command dotnet-serve -ErrorAction SilentlyContinue) {
-    Start-Process -FilePath 'dotnet-serve' -ArgumentList '-p', $frontPort.ToString() -WindowStyle Minimized | Out-Null
+    Start-Process -FilePath 'dotnet-serve' -ArgumentList '-p', $frontPort.ToString() -WorkingDirectory $frontDir -WindowStyle Minimized | Out-Null
     return $true
   }
   # Try user global tools path
   $dotnetServePath = Join-Path $env:USERPROFILE '.dotnet\tools\dotnet-serve.exe'
   if (Test-Path $dotnetServePath) {
-    Start-Process -FilePath $dotnetServePath -ArgumentList '-p', $frontPort.ToString() -WindowStyle Minimized | Out-Null
+    Start-Process -FilePath $dotnetServePath -ArgumentList '-p', $frontPort.ToString() -WorkingDirectory $frontDir -WindowStyle Minimized | Out-Null
     return $true
   }
   # Try npx serve
   if (Get-Command npx -ErrorAction SilentlyContinue) {
-    Start-Process -FilePath 'npx' -ArgumentList 'serve','-l', $frontPort.ToString(), '.' -WindowStyle Minimized | Out-Null
+    Start-Process -FilePath 'npx' -ArgumentList 'serve','-l', $frontPort.ToString(), '.' -WorkingDirectory $frontDir -WindowStyle Minimized | Out-Null
     return $true
   }
   return $false
